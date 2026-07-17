@@ -1,36 +1,54 @@
 // @ts-check
-import React from 'react'
-import { OptimizelyProvider, createInstance, useDecision } from "@optimizely/react-sdk";
+import React from "react";
+import {
+  OptimizelyProvider,
+  createInstance,
+  createPollingProjectConfigManager,
+  createBatchEventProcessor,
+  useDecide,
+  createLogger,
+  DEBUG,
+} from "@optimizely/react-sdk";
 import { StyleSheet, Text, View } from "react-native";
 
 const optimizely = createInstance({
-  sdkKey: process.env.EXPO_PUBLIC_OPTIMIZELY_SDK_KEY,
-  eventBatchSize: 10,
-  eventFlushInterval: 1000,
+  projectConfigManager: createPollingProjectConfigManager({
+    sdkKey: process.env.EXPO_PUBLIC_OPTIMIZELY_SDK_KEY,
+    autoUpdate: true,
+  }),
+  eventProcessor: createBatchEventProcessor({
+    batchSize: 10,
+    flushInterval: 1000,
+  }),
+  logger: createLogger({
+    // logLevel: DEBUG,
+    level: DEBUG
+  }),
 });
 
 const Decision = () => {
   // You have to provide your flag key instead of "product_sort"
-  const [decision, isClientReady, isTimeout] = useDecision("product_sort");
-  console.log(decision)
-  if (!isClientReady) {
+  const { decision, isLoading, error } = useDecide("product_sort");
+  console.log(decision);
+  if (isLoading) {
     return <Text>Loading...</Text>;
   }
-  if (isTimeout) {
-    return <Text>Timeout...</Text>;
+  if (error) {
+    return <Text>Error: {String(error)}</Text>;
   }
   return (
-    <Text>
-      Decision: Flag {decision.enabled ? "Enabled" : "Disabled"}
-    </Text>
+    <Text>Decision: Flag {decision.enabled ? "Enabled" : "Disabled"}</Text>
   );
 };
 
 export default function App() {
   return (
-    <OptimizelyProvider optimizely={optimizely} user={{
-      id: "user123",
-    }}>
+    <OptimizelyProvider
+      client={optimizely}
+      user={{
+        id: "user123",
+      }}
+    >
       <View style={styles.container}>
         <Text>Hello World</Text>
         <Decision />
