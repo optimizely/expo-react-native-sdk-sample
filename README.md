@@ -1,7 +1,7 @@
 # React SDK sample Implementation in Expo React Native
 This is a POC on how to install and use [Optimizely React SDK](https://github.com/optimizely/react-sdk) with [Expo](https://docs.expo.dev/). 
 
-**This POC is based on Expo SDK 50**. Setup might differ from version to version.
+**This POC is based on Expo SDK 57**. Setup might differ from version to version.
 If you face any trouble setting up the SDK, please create an issue under the [Optimizely React SDK issue](https://github.com/optimizely/react-sdk/issues)
 
 ## Env
